@@ -18,35 +18,35 @@ import PageNotFound from "../pages/error/404";
 import AuthContext from "../services/AuthContext";
 
 function Rutas() {
-    const {isSuperuser } = useContext(AuthContext);
+    const { user } = useContext(AuthContext);
 
     return (
-            <Routes>
-                {/* Ruta pública */}
-                <Route path="/" element={<LoginPage />} />
-                <Route path="/recovery" element={<RecoveryPassword />} />
+        <Routes>
+            {/* Ruta pública */}
+            <Route path="/" element={<LoginPage />} />
+            <Route path="/recovery" element={<RecoveryPassword />} />
 
-                {/* Rutas protegidas */}
-                <Route element={<PrivateRoute />}>
-                    <Route path="/dashboard" element={<MainLayout />}>
-                        <Route index element={<Home />} />
-                        <Route path="home" element={<Home />} />
-                        <Route path="usuarios" element={isSuperuser ? <Usuarios /> : <Navigate to="/dashboard/pageNotFound"/>} />
-                        <Route path="addUser" element={<AddUser />} />
-                        <Route path="viewUser" element={<ViewUser />} />
-                        <Route path="prototype" element={<Prototype />} />
-                        <Route path="historicData" element={<HistoricData />} />
-                        <Route path="recopileData" element={<RecopileData />} />
-                        <Route path="settings" element={<Settings />} />
-                        <Route path="changePassword" element={<ChangePassword />} />
-                        <Route path="userProfile" element={<UserProfile />} />
-                        <Route path="pageNotFound" element={<PageNotFound/>}/>
-                        <Route path="*" element={<PageNotFound />} />
-
+            {/* Rutas protegidas */}
+            <Route element={<PrivateRoute />}>
+                <Route path="/dashboard" element={<MainLayout />}>
+                    <Route index element={<Home />} />
+                    <Route path="home" element={<Home />} />
+                    <Route element={<PrivateRoute requiredRole="admin" />}>
+                        <Route path="usuarios" element={<Usuarios />} />
                     </Route>
+                    <Route path="addUser" element={<AddUser />} />
+                    <Route path="viewUser/:userId" element={<ViewUser />} />
+                    <Route path="prototype" element={<Prototype />} />
+                    <Route path="historicData" element={<HistoricData />} />
+                    <Route path="recopileData" element={<RecopileData />} />
+                    <Route path="settings" element={<Settings />} />
+                    <Route path="changePassword" element={<ChangePassword />} />
+                    <Route path="userProfile" element={<UserProfile />} />
+                    <Route path="pageNotFound" element={<PageNotFound />} />
+                    <Route path="*" element={<PageNotFound />} />
                 </Route>
-                
-            </Routes>
+            </Route>
+        </Routes>
     );
 }
 

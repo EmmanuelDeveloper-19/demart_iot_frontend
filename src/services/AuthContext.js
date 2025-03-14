@@ -1,127 +1,188 @@
-import React, { createContext, useState, useEffect } from "react";
+import React, { createContext, useState, useEffect, useReducer, useCallback } from "react";
 import axios from "axios";
-import { jwtDecode } from "jwt-decode";
 
+const API_BASE_URL = "http://localhost:3001";
+
+// Crea el contexto de la autenticación
 export const AuthContext = createContext();
 
-export const AuthProvider = ({ children, navigate }) => {
-  const [authTokens, setAuthTokens] = useState(() =>
-    localStorage.getItem("authTokens")
-      ? JSON.parse(localStorage.getItem("authTokens"))
-      : null
-  );
-  const [user, setUser] = useState(() =>
-    localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : null
-  );
-  const [userProfile, setUserProfile] = useState(null);
-  const [isSuperuser, setIsSuperuser] = useState(false);
-  const [users, setUsers] = useState([]);
+// Estado inicial
+const initialState = {
+  user: null,
+  userProfile: null,
+  users: [],
+  error: "",
+  success: "",
+};
 
-  const fetchUserProfile = async () => {
-    if (!authTokens) {
-      console.error("No hay tokens de autenticación disponibles.");
-      return;
-    }
+const authReducer = (state, action) => {
+  switch (action.type) {
+    case "LOGIN":
+      return { ...state, user: action.payload, userProfile: action.payload };
+    case "LOGOUT":
+      return { ...initialState };
+    case "SET_USERS":
+      return { ...state, users: action.payload };
+    case "SET_ERROR":
+      return { ...state, error: action.payload };
+    case "SET_SUCCESS":
+      return { ...state, success: action.payload };
+    default:
+      return state;
+  }
+};
 
+export const AuthProvider = ({ children }) => {
+  const [state, dispatch] = useReducer(authReducer, initialState);
+  const [loading, setLoading] = useState(true);
+  const token = localStorage.getItem("token");
+
+  // Función para iniciar sesión
+  const login = useCallback(async (email, password) => {
     try {
-      const response = await axios.get("http://127.0.0.1:8000/auth/user-profile/", {
-        headers: {
-          Authorization: `Bearer ${authTokens.access}`,
-        },
-      });
-      setUserProfile(response.data);
-      setIsSuperuser(response.data.is_superuser);
-    } catch (error) {
-      console.error("Error obteniendo el perfil del usuario:", error.response?.data || error.message);
-    }
-  };
-
-  const fetchUsers = async () => {
-    if (!authTokens) {
-      console.error("No hay tokens de autenticación disponibles.");
-      return;
-    }
-
-    try {
-      const response = await axios.get("http://127.0.0.1:8000/auth/listar_usuarios/", {
-        headers: {
-          Authorization: `Bearer ${authTokens.access}`,
-        },
-      });
-      setUsers(response.data);
-    } catch (error) {
-      console.error("Error obteniendo la lista de usuarios:", error.response?.data || error.message);
-    }
-  };
-
-  const isTokenExpired = (token) => {
-    try {
-      const decodedToken = jwtDecode(token);
-      const currentTime = Date.now() / 1000; // Corregido: debe dividirse por 1000
-      return decodedToken.exp < currentTime;
-    } catch (error) {
-      console.error("Error al decodificar el token: ", error);
+      const response = await axios.post(`${API_BASE_URL}/login`, { email, password });
+      const { token, user } = response.data;
+      localStorage.setItem("token", token); // Guardar token en localStorage
+      dispatch({ type: "LOGIN", payload: user });
       return true;
-    }
-  };
-
-  useEffect(() => {
-    if (authTokens) {
-      axios.defaults.headers.common["Authorization"] = `Bearer ${authTokens.access}`;
-      fetchUserProfile();
-      fetchUsers();
-
-      if (isTokenExpired(authTokens.access)) {
-        alert("Tu sesión ha expirado. Debes iniciar sesión nuevamente.");
-        logoutUser();
-      }
-    }
-  }, [authTokens]);
-
-  const loginUser = async (username, password) => {
-    try {
-      const response = await axios.post("http://127.0.0.1:8000/auth/login/", {
-        username,
-        password,
-      });
-
-      if (response.data.status === "success") {
-        localStorage.setItem("authTokens", JSON.stringify(response.data));
-        localStorage.setItem("user", JSON.stringify({ username }));
-        setAuthTokens(response.data);
-        setUser({ username });
-
-        const decodedToken = JSON.parse(atob(response.data.access.split(".")[1]));
-        setIsSuperuser(decodedToken.is_superuser);
-        await fetchUserProfile();
-        return true;
-      } else {
-        throw new Error("Error en la autenticación");
-      }
     } catch (error) {
-      console.error("Error en loginUser:", error);
+      dispatch({ type: "SET_ERROR", payload: "Error al iniciar sesión" });
       return false;
     }
-  };
+  }, []);
 
-  const logoutUser = () => {
-    setAuthTokens(null);
-    setUser(null);
-    setUserProfile(null);
-    setUsers([]);
-    localStorage.removeItem("authTokens");
-    localStorage.removeItem("user");
-    delete axios.defaults.headers.common["Authorization"];
+  // Función para cerrar sesión
+  const logout = useCallback(() => {
+    localStorage.removeItem("token");
+    dispatch({ type: "LOGOUT" });
+  }, []);
 
-    if (navigate) {
-      navigate("/"); // Redirige al login
-    } else {
-      window.location.href = "/"; // Fallback
+  // Función para verificar el rol del usuario
+  const isSuperuser = useCallback(() => {
+    return state.user?.role === "admin"; // Accede a state.user
+  }, [state.user]); // Dependencia correcta
+
+  // Función para obtener todos los usuarios
+  const fetchUsers = useCallback(async () => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/users`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      dispatch({ type: "SET_USERS", payload: response.data });
+    } catch (error) {
+      dispatch({ type: "SET_ERROR", payload: "Error al obtener usuarios" });
     }
+  }, [token]);
+
+  // Función para agregar un usuario
+  const register = useCallback(async (userData) => {
+    try {
+      await axios.post(`${API_BASE_URL}/register`, userData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      dispatch({ type: "SET_SUCCESS", payload: "Usuario registrado con éxito" });
+      fetchUsers(); // Actualizar la lista de usuarios después de registrar uno nuevo
+    } catch (error) {
+      dispatch({ type: "SET_ERROR", payload: "Hubo un problema al registrar al usuario" });
+    }
+  }, [token, fetchUsers]);
+
+  // Obtener usuario por ID
+  const getUserById = useCallback(async (userId) => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/users/${userId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return response.data;
+    } catch (error) {
+      dispatch({ type: "SET_ERROR", payload: "Error al obtener el usuario" });
+      return null;
+    }
+  }, [token]);
+
+  // Función para actualizar el rol del usuario
+  const updateUserRole = useCallback(async (userId, newRole) => {
+    try {
+      const response = await axios.put(
+        `${API_BASE_URL}/users/${userId}/role`,
+        {
+          role: newRole,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      dispatch({ type: "SET_ERROR", payload: "Error al actualizar el rol" });
+      return null;
+    }
+  }, [token]);
+
+  const deleteUser = useCallback(async (userId) => {
+    try {
+      const response = await axios.delete(
+        `${API_BASE_URL}/users/${userId}`,
+        {
+          headers: { Authorization: `Bearer ${token}`}
+        }
+      );
+      return response.data;
+    } catch (error) {
+      dispatch({type: "SET_ERROR", payload: "Error al eliminar el usuario"});
+      return null
+    }
+  }, [token]);
+
+  // Obtener los datos del usuario usando el token (una sola vez)
+  useEffect(() => {
+    if (token) {
+      const decodedToken = JSON.parse(atob(token.split(".")[1]));
+      const userId = decodedToken.id;
+
+      axios
+        .get(`${API_BASE_URL}/user/${userId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        .then((response) => {
+          dispatch({ type: "LOGIN", payload: response.data });
+          setLoading(false); // Finaliza la carga
+        })
+        .catch((error) => {
+          dispatch({ type: "SET_ERROR", payload: "No se pudo obtener los datos del usuario" });
+          setLoading(false); // Finaliza la carga
+        });
+
+      fetchUsers(); // Cargar la lista de usuarios
+    } else {
+      setLoading(false); // Finaliza la carga si no hay token
+    }
+  }, [token, fetchUsers]);
+
+  if (loading) {
+    return <div>Loading...</div>; // Muestra un spinner o algo similar mientras carga
+  }
+
+  // Valor proporcionado por el contexto
+  const contextValue = {
+    user: state.user,
+    users: state.users,
+    userProfile: state.userProfile,
+    error: state.error,
+    success: state.success,
+    login,
+    logout,
+    isSuperuser,
+    register,
+    getUserById,
+    updateUserRole,
+    deleteUser
   };
 
   return (
-    <AuthContext.Provider value={{ authTokens, user, userProfile, users, isSuperuser, loginUser, logoutUser }}>
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
   );

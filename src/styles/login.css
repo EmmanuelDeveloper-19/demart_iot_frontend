@@ -4,11 +4,7 @@
     margin: 0;
     padding:0;
     font-family:'Montserrat', sans-serif;
-    background: linear-gradient(
-        rgba(5, 5, 5, 0.673), 
-        rgba(2, 2, 2, 0.3)
-      ), 
-      url('https://wallpapercat.com/w/full/a/5/6/149274-3840x2160-desktop-4k-river-wallpaper-photo.jpg') no-repeat center center fixed;
+    background: linear-gradient(to bottom, #295A85, #244E74, #1E3555, #191F39);
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -26,9 +22,9 @@ h2 {
 
 .login-form
 {
-    background-color: #000000c0;
+    background-color: #1E2A38;
     padding: 2rem;
-    border-radius: 15px;
+    border-radius: 2rem;
     box-shadow: 0 4px 8px rgba(0,0,0,0.581);
     max-width: 500px;
     text-align: center;
@@ -45,7 +41,7 @@ h2 {
   .login-form input {
     width: 100%;
     padding: 0.8rem;
-    border-radius: 5px;
+    border-radius: 10rem;
     font-size: 1rem;
     box-sizing: border-box;
   }
@@ -54,3 +50,10 @@ h2 {
     border-color: #5c5ab0;
     outline: none;
   }
+
+
+.forgot-password {
+  color: #3E6B92;
+  text-decoration: none;
+}
+

@@ -96,7 +96,7 @@ input:disabled
     padding: 0.8rem;
     color: white;
     border: none;
-    border-radius: 5px;
+    border-radius: 15rem;
     font-size: 20px;
     cursor: pointer;
     margin-top: 1rem;
@@ -108,28 +108,40 @@ input:disabled
 
 .btn-primary
 {
-    background-color: #413f9a;
+    background-color: #3E6B92;
 }
 
-.btn-primary:hover
-{
-    background-color: #5c5ab0;
+.btn-primary:hover {
+    background-color: #31567A; 
+    transition: background-color 0.3s ease-in-out;
 }
 
-.btn-info
-{
-    background: #4caf50;
+
+.btn-success {
+    background-color: #4CAF50; /* Verde vibrante */
+    color: white;
+}
+.btn-success:hover {
+    background-color: #3E8E41; /* Verde más oscuro */
 }
 
-.btn-warning 
-{
-    background-color: #FFC107;
+.btn-warning {
+    background-color: #E7A33E; /* Naranja oscuro */
+    color: white;
 }
-  
-.btn-danger 
-{
-    background-color: #E53935;
+.btn-warning:hover {
+    background-color: #D48C30;
 }
+
+.btn-danger {
+    background-color: #D9534F; /* Rojo intenso */
+    color: white;
+    
+}
+.btn-danger:hover {
+    background-color: #C12E2A; /* Rojo más oscuro */
+}
+
 
 .btn-pagination
 {
@@ -267,7 +279,7 @@ input:disabled
     display: flex;
     position: fixed;
     width: 250px;
-    background-color: #1d1d30;
+    background: linear-gradient(to bottom, #295A85, #244E74, #1E3555, #191F39);
     padding: 1rem;
     flex-direction: column;
     height: 100vh;
@@ -356,7 +368,7 @@ input:disabled
     justify-content: space-between; 
     align-items: center;
     padding: 1rem 2rem;
-    background-color: #2D2C48;
+    background-color: #3E6B92;
     color: white;
     border-bottom: 1px solid white;
 }
@@ -457,7 +469,8 @@ input:disabled
   flex: 1;
   color: white;
   padding: 2rem;
-  background-color: #2D2C48;
+  /*   background: linear-gradient(to bottom, #295A85, #244E74, #1E3555, #191F39);*/
+  background: #191f39;
   overflow-y: auto;
 }
 
@@ -504,6 +517,27 @@ input:disabled
     padding: 10px;
     border-radius: 5px;
     border: 1px soloid #ccc;
+    font-size: 16px;
+}
+
+.form-group select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    background-color: #fff; /* Color de fondo */
+    appearance: none; /* Elimina el estilo por defecto de los navegadores */
+    -webkit-appearance: none; /* Para Safari */
+    -moz-appearance: none; /* Para Firefox */
+}
+
+.form-group select:focus {
+    border-color: #007bff; /* Color del borde cuando está enfocado */
+    outline: none; /* Elimina el borde azul que aparece en algunos navegadores */
+}
+
+.form-group select option {
     font-size: 16px;
 }
 

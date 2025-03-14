@@ -22,8 +22,8 @@ const Settings = () => {
             <div className="col-md-12">
                 <div className="profile-container">
                     <div className="profile-image-wrapper">
-                        {userProfile?.foto_perfil? ( 
-                        <img src={userProfile.foto_perfil} alt="Perfil" className="profile-image" />
+                        {userProfile?.profile_picture? ( 
+                        <img src={userProfile.profile_picture} alt="Perfil" className="profile-image" />
                         ): (
                             <img    
                                 src=""
@@ -46,7 +46,7 @@ const Settings = () => {
                             className="form-control"
                             required
                             disabled
-                            value={userProfile?.name}
+                            value={userProfile?.first_name}
                             color="white"
                         />
                     </div>
@@ -59,7 +59,7 @@ const Settings = () => {
                             className="form-control"
                             required
                             disabled
-                            value={userProfile?.lastname}
+                            value={userProfile?.last_name}
                         />
                     </div>
                     <div className="form-group">
@@ -72,6 +72,18 @@ const Settings = () => {
                             required
                             disabled
                             value={userProfile?.email}
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="email">Rol</label>
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            className="form-control"
+                            required
+                            disabled
+                            value={userProfile?.rol}
                         />
                     </div>
                     <div className="form-group">
@@ -95,7 +107,7 @@ const Settings = () => {
                             className="form-control"
                             required
                             disabled
-                            value={userProfile?.address}
+                            value={`${userProfile?.address?.street}, ${userProfile?.address?.city}, ${userProfile?.address?.state}, ${userProfile?.address?.country}, ${userProfile?.address?.zip}`}
                         />
                     </div>
                     <button className="btn btn-primary" onClick={cambiarContraseña}>Actualizar password</button>

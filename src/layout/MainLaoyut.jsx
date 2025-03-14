@@ -9,7 +9,7 @@ const MainLayout = () => {
         <Sidebar />
         <div className="main-area">
           <Navbar />
-          <main class="content">
+          <main className="content">
             <Outlet />
           </main>
         </div>

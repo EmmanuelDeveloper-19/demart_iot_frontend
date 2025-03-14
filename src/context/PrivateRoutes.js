@@ -2,10 +2,19 @@ import React, { useContext } from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import AuthContext from "../services/AuthContext";
 
-const PrivateRoute = () => {
-  const { authTokens } = useContext(AuthContext);
+const PrivateRoute = ({ requiredRole }) => {
+  const { user } = useContext(AuthContext);
+  const token = localStorage.getItem('token');
 
-  return authTokens ? <Outlet /> : <Navigate to="/" />;
+  if (!token) {
+    return <Navigate to="/" />;
+  }
+
+  if (requiredRole && user?.rol !== requiredRole) {
+    return <Navigate to="/dashboard/pageNotFound" />;
+  }
+
+  return <Outlet />;
 };
 
 export default PrivateRoute;
