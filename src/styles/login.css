@@ -2,8 +2,8 @@
 
 .body-form {
     margin: 0;
-    padding:0;
-    font-family:'Montserrat', sans-serif;
+    padding: 0;
+    font-family: 'Montserrat', sans-serif;
     background: linear-gradient(to bottom, #295A85, #244E74, #1E3555, #191F39);
     background-size: cover;
     background-position: center;
@@ -17,43 +17,81 @@
 
 h2 {
     margin-bottom: 1.5rem;
-    font-size: 1.8rem;
+    font-size: 2rem;
+    color: #333; /* Color blanco para mejor contraste */
+    font-weight: bold;
+    text-align: center;
 }
 
-.login-form
-{
-    background-color: #1E2A38;
-    padding: 2rem;
-    border-radius: 2rem;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.581);
-    max-width: 500px;
+p {
+    color: #333; /* Color más suave */
+    font-weight: 300;
     text-align: center;
+}
+
+.login-form {
+    background: rgba(255, 255, 255, 0.9); /* Mayor transparencia */
+    padding: 2rem;
+    border-radius: 1.5rem;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+    backdrop-filter: blur(8px); /* Efecto de vidrio esmerilado */
 }
 
 .login-form label {
     display: block;
     margin-bottom: 0.5rem;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     text-align: left;
+    color: #333;
+    font-weight: 500;
     margin-top: 1rem;
-  }
-  
-  .login-form input {
-    width: 100%;
-    padding: 0.8rem;
-    border-radius: 10rem;
-    font-size: 1rem;
-    box-sizing: border-box;
-  }
-
-  .login-form input:focus {
-    border-color: #5c5ab0;
-    outline: none;
-  }
-
-
-.forgot-password {
-  color: #3E6B92;
-  text-decoration: none;
 }
 
+.login-form input {
+    width: 100%;
+    padding: 0.9rem;
+    border-radius: 50px;
+    font-size: 1rem;
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+.login-form input:focus {
+    border-color: #3E6B92;
+    box-shadow: 0 0 8px rgba(62, 107, 146, 0.5);
+}
+
+.login-btn {
+    width: 100%;
+    padding: 0.9rem;
+    background: #3E6B92;
+    color: white;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 50px;
+    margin-top: 1.5rem;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.login-btn:hover {
+    background: #295A85;
+}
+
+.forgot-password {
+    display: block;
+    color: #3E6B92;
+    text-decoration: none;
+    font-size: 0.9rem;
+    margin-top: 1rem;
+    transition: color 0.3s ease;
+}
+
+.forgot-password:hover {
+    color: #244E74;
+}

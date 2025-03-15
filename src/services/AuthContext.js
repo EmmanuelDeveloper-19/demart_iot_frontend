@@ -121,20 +121,66 @@ export const AuthProvider = ({ children }) => {
     }
   }, [token]);
 
+  // Función para eliminar usuarios
   const deleteUser = useCallback(async (userId) => {
     try {
       const response = await axios.delete(
         `${API_BASE_URL}/users/${userId}`,
         {
-          headers: { Authorization: `Bearer ${token}`}
+          headers: { Authorization: `Bearer ${token}` }
         }
       );
       return response.data;
     } catch (error) {
-      dispatch({type: "SET_ERROR", payload: "Error al eliminar el usuario"});
+      dispatch({ type: "SET_ERROR", payload: "Error al eliminar el usuario" });
       return null
     }
   }, [token]);
+
+  const updateUser = useCallback(async (data, userId) => {
+    try {
+      const response = await axios.put(
+        `${API_BASE_URL}/users/${userId}`,   // Asegúrate de que `userId` esté disponible
+        data,                                // Enviar `data` en lugar de `newData`
+        {
+          headers: { Authorization: `Bearer ${token}` } // Agregar el token de autorización
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error(error);  // Esto ayudará a depurar cualquier error
+      dispatch({ type: "SET_ERROR", payload: "Error al actualizar el usuario" });
+      return null;
+    }
+  }, [token]);  // Asegúrate de que `userId` esté también como dependencia si cambia
+  
+  
+  
+  const updateProfilePicture = useCallback(async (file) => {
+    try {
+      const formData = new FormData();
+      formData.append("profile_picture", file);
+  
+      const response = await axios.post(
+        `${API_BASE_URL}/user/${state.user.id}/profile_picture`, // Asegúrate de usar el ID correcto
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+  
+      // Actualizar el perfil en el contexto
+      dispatch({ type: "LOGIN", payload: response.data });
+      return response.data;
+    } catch (error) {
+      dispatch({ type: "SET_ERROR", payload: "Error al actualizar la imagen de perfil" });
+      return null;
+    }
+  }, [token, state.user]);
+  
 
   // Obtener los datos del usuario usando el token (una sola vez)
   useEffect(() => {
@@ -178,7 +224,9 @@ export const AuthProvider = ({ children }) => {
     register,
     getUserById,
     updateUserRole,
-    deleteUser
+    deleteUser,
+    updateUser,
+    updateProfilePicture
   };
 
   return (

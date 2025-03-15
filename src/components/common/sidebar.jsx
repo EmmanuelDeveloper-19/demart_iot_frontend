@@ -3,6 +3,8 @@ import { useContext } from "react";
 import { AuthContext } from "../../services/AuthContext";
 import "../../index.css";
 
+const API_BASE_URL = "http://localhost:3001";
+
 const Sidebar = () => {
   const { userProfile, logout, user } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -20,7 +22,7 @@ const Sidebar = () => {
           {/* Verifica si hay foto de perfil en userProfile */}
           {userProfile?.profile_picture ? (
             <img
-              src={userProfile.profile_picture}
+              src={`${API_BASE_URL}/${userProfile.profile_picture}`}
               alt="Foto de perfil"
               width="70px"
               height="70px"
